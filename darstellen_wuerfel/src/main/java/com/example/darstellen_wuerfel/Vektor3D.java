@@ -1,7 +1,5 @@
 package com.example.darstellen_wuerfel;
 
-import javafx.scene.canvas.GraphicsContext;
-
 public class Vektor3D {
 
     public double x, y, z;
@@ -34,14 +32,8 @@ public class Vektor3D {
         );
     }
 
-    // Orthogonale Projektion
-    public Vektor to2D() {
-        return new Vektor(x + 300, y + 200);
-    }
-
-    public void drawLineTo(GraphicsContext gc, Vektor3D other) {
-        Vektor p1 = this.to2D();
-        Vektor p2 = other.to2D();
-        gc.strokeLine(p1.x, p1.y, p2.x, p2.y);
+    // Orthogonale Projektion auf 2D (Canvas zentriert)
+    public Vektor to2D(double centerX, double centerY) {
+        return new Vektor(x + centerX, -y + centerY); // y invertiert
     }
 }

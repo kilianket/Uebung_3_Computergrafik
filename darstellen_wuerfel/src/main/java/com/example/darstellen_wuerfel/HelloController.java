@@ -12,46 +12,49 @@ public class HelloController {
 
     @FXML
     public void initialize() {
-        zeichneWuerfel();
+        drawCube();
     }
 
-    private void zeichneWuerfel() {
-
+    private void drawCube() {
         GraphicsContext gc = meinCanvas.getGraphicsContext2D();
         gc.clearRect(0, 0, meinCanvas.getWidth(), meinCanvas.getHeight());
         gc.setLineWidth(2);
-
-        Vektor3D[] wuerfel = new Vektor3D[8];
-
-        wuerfel[0] = new Vektor3D(50, 50, 50);
-        wuerfel[1] = new Vektor3D(-50, 50, 50);
-        wuerfel[2] = new Vektor3D(-50, -50, 50);
-        wuerfel[3] = new Vektor3D(50, -50, 50);
-
-        wuerfel[4] = new Vektor3D(50, 50, -50);
-        wuerfel[5] = new Vektor3D(-50, 50, -50);
-        wuerfel[6] = new Vektor3D(-50, -50, -50);
-        wuerfel[7] = new Vektor3D(50, -50, -50);
-
-        // Rotation
-        double angleX = Math.toRadians(30);
-        double angleZ = Math.toRadians(30);
-
-        for (int i = 0; i < wuerfel.length; i++) {
-            wuerfel[i] = wuerfel[i].rotateX(angleX).rotateZ(angleZ);
-        }
-
         gc.setStroke(Color.BLUE);
 
-        for (int i = 0; i < 4; i++) {
-            // vorne
-            wuerfel[i].drawLineTo(gc, wuerfel[(i + 1) % 4]);
+        // Würfelpunkte
+        Vektor3D[] cube = {
+                new Vektor3D(50, 50, 50),
+                new Vektor3D(-50, 50, 50),
+                new Vektor3D(-50, -50, 50),
+                new Vektor3D(50, -50, 50),
+                new Vektor3D(50, 50, -50),
+                new Vektor3D(-50, 50, -50),
+                new Vektor3D(-50, -50, -50),
+                new Vektor3D(50, -50, -50)
+        };
 
-            // hinten
-            wuerfel[4 + i].drawLineTo(gc, wuerfel[4 + (i + 1) % 4]);
+        // Leichte Drehung um X und Z
+        double angleX = Math.toRadians(20);
+        double angleZ = Math.toRadians(20);
+        for (int i = 0; i < cube.length; i++) {
+            cube[i] = cube[i].rotateX(angleX).rotateZ(angleZ);
+        }
 
-            // verbindungen
-            wuerfel[i].drawLineTo(gc, wuerfel[i + 4]);
+        // Kanten des Würfels
+        int[][] edges = {
+                {0,1},{1,2},{2,3},{3,0}, // vorne
+                {4,5},{5,6},{6,7},{7,4}, // hinten
+                {0,4},{1,5},{2,6},{3,7}  // verbindungen
+        };
+
+        // Zeichnen mit orthogonaler Projektion
+        double centerX = meinCanvas.getWidth()/2;
+        double centerY = meinCanvas.getHeight()/2;
+
+        for (int[] edge : edges) {
+            Vektor p1 = cube[edge[0]].to2D(centerX, centerY);
+            Vektor p2 = cube[edge[1]].to2D(centerX, centerY);
+            gc.strokeLine(p1.x, p1.y, p2.x, p2.y);
         }
     }
 }
